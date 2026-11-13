@@ -6,11 +6,18 @@ permissions:
   contents: read
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: ./.venv/bin/python
+          - os: windows-latest
+            python: ./.venv/Scripts/python.exe
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - run: bash scripts/setup.sh
-      - run: .venv/bin/stock-lab backtest --csv data/demo.csv --start 2024-08-01
+      - run: python scripts/setup.py
+      - run: ${{ matrix.python }} -m stock_lab.cli backtest --csv data/demo.csv --start 2024-08-01

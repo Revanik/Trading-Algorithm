@@ -3,6 +3,7 @@
 import hashlib
 import json
 import sqlite3
+from contextlib import closing
 from dataclasses import asdict
 from pathlib import Path
 
@@ -19,7 +20,7 @@ def replay(path: Path, bars: list[Bar], config: Config, start: str | None = None
     report = simulate(bars, config, start)
     settings = json.dumps({"config": asdict(config), "start": start}, sort_keys=True)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with sqlite3.connect(path, isolation_level=None) as db:
+    with closing(sqlite3.connect(path, isolation_level=None)) as db:
         db.execute("BEGIN IMMEDIATE")
         try:
             db.execute("CREATE TABLE IF NOT EXISTS snapshot (id INTEGER PRIMARY KEY, payload TEXT)")

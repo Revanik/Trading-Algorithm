@@ -4,15 +4,24 @@ A Python starting point for stock strategy research, backtesting, and a local si
 account. The included strategy is an illustrative baseline with **no demonstrated profitable
 edge**. Synthetic demo results say nothing about investment performance.
 
-## Open in the cloud
+## Run locally
 
-[Create a GitHub Codespace](https://codespaces.new/Revanik/Trading-Algorithm)
-from the branch containing this setup. The dev container installs Python 3.12, creates
-`.venv`, and runs the checks. Codespaces may incur charges depending on your GitHub plan
-and usage. Stop it when finished. It pauses when idle and is a development workspace;
-this setup does not provision an always-running service.
+Install Git and Python 3.12 or newer. In Windows PowerShell, clone the setup branch
+(use `main` after the pull request is merged):
 
-In an existing Codex Cloud workspace or a local checkout:
+```powershell
+git clone --branch codex/trading-foundation https://github.com/Revanik/Trading-Algorithm.git
+cd Trading-Algorithm
+py scripts/setup.py
+.\.venv\Scripts\python.exe -m stock_lab.cli backtest --csv data/demo.csv --start 2024-08-01 --output reports/demo.json
+```
+
+The setup creates an isolated `.venv`, installs the package and dev tools, and runs the
+tests and lint checks. No Docker, Codespaces, broker credentials, or PowerShell activation
+script is required. If the Windows Python launcher `py` is unavailable, use `python`
+instead, ensuring it selects Python 3.12 or newer.
+
+On macOS or Linux, after cloning and entering the repository:
 
 ```bash
 bash scripts/setup.sh
@@ -24,6 +33,19 @@ The full JSON report contains settings, fills, a daily equity curve, total retur
 drawdown, transaction costs, and a fully invested buy-and-hold comparison before costs.
 That benchmark has different exposure from the capped strategy. There are no runtime
 dependencies outside the Python standard library. Dev/build tools need package downloads.
+
+## Codex Cloud development
+
+Codex Cloud can work on the same GitHub repository while you run the code on your computer.
+Its checkout, virtual environment, reports, and simulated account are separate from your
+local checkout. Exchange code through Git commits and branches.
+
+For the reusable Codex Cloud environment, select `Revanik/Trading-Algorithm`, use Python
+3.12 or newer, and run `python3 scripts/setup.py` from the repository root as the setup
+command. Until the pull request is merged, use `codex/trading-foundation` for tasks.
+Setup needs access to GitHub and Python package downloads; no trading secrets are needed.
+See [the environment checklist](docs/codex-cloud.md). This repository supplies setup
+instructions; it does not publish or change your Codex environment settings automatically.
 
 ## Strategy and risk controls
 
@@ -72,6 +94,14 @@ exchange holidays. Regenerate with `python scripts/generate_demo.py`.
 
 ## Local paper account
 
+On Windows (without activating the virtual environment):
+
+```powershell
+.\.venv\Scripts\python.exe -m stock_lab.cli paper --csv data/demo.csv --start 2024-08-01 --state state/demo.sqlite3 --output reports/paper.json
+```
+
+On macOS/Linux, with the virtual environment activated:
+
 ```bash
 stock-lab paper --csv data/demo.csv --start 2024-08-01 \
   --state state/demo.sqlite3 --output reports/paper.json
@@ -91,7 +121,7 @@ python -m unittest discover -s tests -v
 ruff check .
 ```
 
-GitHub Actions checks signal timing, transaction costs, cash/exposure constraints,
+GitHub Actions runs on Windows and Linux and checks signal timing, costs, cash/exposure constraints,
 drawdown halts, evaluation-period isolation, CSV validation, and paper replay safety.
 
 Next: validate vetted historical data on unseen periods, different stocks, and realistic

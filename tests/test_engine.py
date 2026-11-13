@@ -3,6 +3,7 @@ import json
 import sqlite3
 import tempfile
 import unittest
+from contextlib import closing
 from dataclasses import replace
 from datetime import date, timedelta
 from pathlib import Path
@@ -107,7 +108,7 @@ class PaperTests(unittest.TestCase):
             expected = simulate(data, config)
             self.assertEqual(appended["fills"], expected["fills"])
             self.assertEqual(appended["equity_curve"], expected["equity_curve"])
-            with sqlite3.connect(path) as db:
+            with closing(sqlite3.connect(path)) as db:
                 self.assertEqual(db.execute("SELECT COUNT(*) FROM ledger").fetchone()[0], 5)
 
     def test_rejects_rewritten_history_and_settings_without_changing_account(self):
@@ -123,7 +124,7 @@ class PaperTests(unittest.TestCase):
             ):
                 with self.assertRaises(ValueError):
                     replay(path, history, settings)
-            with sqlite3.connect(path) as db:
+            with closing(sqlite3.connect(path)) as db:
                 saved = json.loads(db.execute("SELECT payload FROM snapshot").fetchone()[0])
                 self.assertEqual(saved["bar_count"], 4)
                 self.assertEqual(saved["report"]["config"]["cost_bps"], 10)
