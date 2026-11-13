@@ -1,1 +1,3 @@
 # Trading-Algorithm
+
+initial setup
