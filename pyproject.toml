@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=75,<81"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stock-lab"
+version = "0.1.0"
+description = "Reproducible stock strategy research and local simulated trading"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["ruff==0.14.3"]
+
+[project.scripts]
+stock-lab = "stock_lab.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
